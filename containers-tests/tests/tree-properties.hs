@@ -23,6 +23,7 @@ main = defaultMain
          , testProperty "ap_ap"                    prop_ap_ap
          , testProperty "ap_liftA2"                prop_ap_liftA2
          , testProperty "monadFix_ls"              prop_monadFix_ls
+         , testProperty "paths_iso"                paths_iso
          ]
 
 {--------------------------------------------------------------------
@@ -102,3 +103,6 @@ prop_monadFix_ls val ta ti =
     f :: (Int -> Int) -> Int -> Tree (Int -> Int)
     f q y = let t = apply ti y
             in fmap (\w -> fact w q) t
+
+paths_iso :: Tree Int -> Property
+paths_iso t = T.paths t === T.paths' t

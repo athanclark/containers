@@ -44,6 +44,9 @@ module Data.Tree(
     , foldTree
     , flatten
     , levels
+    , paths
+    , paths'
+    , steps
 
     -- * Ascii Drawings
     , drawTree
@@ -299,6 +302,24 @@ levels t =
     map (map rootLabel) $
         takeWhile (not . null) $
         iterate (concatMap subForest) [t]
+
+paths :: Tree a -> [[a]]
+paths t = go id t []
+  where
+    -- go :: ([a] -> [a]) -> Tree a -> [[a]] -> [[a]]
+    go f (Node a as) rest = case as of
+      [] -> f [a] : rest
+      _ ->
+        -- let folder :: Tree a -> [[a]] -> [[a]]
+        let folder x acc = go (a:) x acc
+        in  foldr folder rest as
+
+paths' :: Tree a -> [[a]]
+paths' (Node a []) = [[a]]
+paths' (Node a as) = map (a:) (concatMap paths as)
+
+steps :: Tree a -> [[a]]
+steps (Node a as) = [a]:concatMap (map (a:) . steps) as
 
 -- | Fold a tree into a "summary" value in depth-first order.
 --
